@@ -1,6 +1,6 @@
 package logicaPersistencia.exepciones;
 
-public class folioNoExisteException {
+public class folioNoExisteException extends Exception{
 	private String mensaje;
 	
 	public folioNoExisteException(String mensaje) {

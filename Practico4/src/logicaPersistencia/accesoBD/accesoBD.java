@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 import logicaPersistencia.valueObjects.VOFolio;
+import logicaPersistencia.valueObjects.VOFolioMaxRev;
 import logicaPersistencia.valueObjects.VORevision;
 
 import java.io.*;
@@ -44,7 +45,7 @@ public class accesoBD {
         ps.setInt(3, folio.getPaginas());
         ps.executeUpdate();
 	}
-	
+	/*
 	public int obtenerUltimaRevision(String codFolio) {
 		try {
 			PreparedStatement pstmt = con.prepareStatement(Consultas.obtenerRevisiones());
@@ -57,7 +58,9 @@ public class accesoBD {
 			e.printStackTrace();
 		}
 		return 0;
+		
 	}
+	*/
 	public void agregarRevision(String codFolio, VORevision revision) throws SQLException {
         PreparedStatement pstmt = con.prepareStatement(Consultas.AgregarRevision());
         pstmt.setString(1, codFolio);
@@ -86,6 +89,22 @@ public class accesoBD {
 		}
 	}
 	
+	public String darDescripcion(String codFolio, int numRev) throws SQLException {	
+		
+		String desc = null;
+		PreparedStatement pstmt = con.prepareStatement(Consultas.darDescripcion());
+		pstmt.setString(1, codFolio);
+		pstmt.setInt(2, numRev);
+		ResultSet rs = pstmt.executeQuery();
+		
+		if(rs.next()) {
+			desc = rs.getString("descripcion");
+		}
+		rs.close();
+		pstmt.close();
+		return desc;
+	}
+	/*
 	public void listarFolios() {
 		try {
 			PreparedStatement pstmt = con.prepareStatement(Consultas.ListarFolios());
@@ -97,29 +116,47 @@ public class accesoBD {
 			e.printStackTrace();
 		}
 	}
+	*/
 	
-	public void listarRevisiones(String codFolio) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement(Consultas.ListarRevisiones());
-			pstmt.setString(1, codFolio);
-			pstmt.executeUpdate();
-			pstmt.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public List<VOFolio> listarFolios() throws SQLException{
+		List<VOFolio> lista = new ArrayList<>();
+		PreparedStatement pstmt = con.prepareStatement(Consultas.ListarFolios());
+		ResultSet rs = pstmt.executeQuery();
+		
+		while(rs.next()) {
+			VOFolio folio = new VOFolio(rs.getString("codigo"), rs.getString("caratula"), rs.getInt("paginas"));
+			lista.add(folio);
 		}
+		rs.close();
+		pstmt.close();
+		return lista;
 	}
 	
-	public void folioMasRevisado() {
-		try {
-			PreparedStatement pstmt = con.prepareStatement(Consultas.FolioMasRevisado());
-			pstmt.executeUpdate();
-			pstmt.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public List<VORevision> listarRevisiones(String codFolio) throws SQLException {
+		List<VORevision> lista = new ArrayList<>();
+		PreparedStatement pstmt = con.prepareStatement(Consultas.ListarRevisiones());
+		pstmt.setString(1, codFolio);
+		ResultSet rs =pstmt.executeQuery();
+		while(rs.next()) {
+			VORevision revision = new VORevision(rs.getInt("numero"),rs.getString("codFolio"), rs.getString("descripcion"));
+			lista.add(revision);
 		}
+		rs.close();
+		pstmt.close();
+		return lista;
+	}
+	
+	public VOFolioMaxRev folioMasRevisado() throws SQLException {
+		PreparedStatement pstmt = con.prepareStatement(Consultas.FolioMasRevisado());
+		ResultSet rs = pstmt.executeQuery();
+		
+		if(rs.next()) {
+			VOFolioMaxRev revisionMax = new VOFolioMaxRev(rs.getString("codigo"), rs.getString("caratula"), rs.getInt("paginas"), rs.getInt("cRevs"));
+			rs.close();
+			pstmt.close();
+			return revisionMax;
+		}
+		pstmt.close();
+		return null;
 	}
 }

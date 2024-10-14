@@ -41,6 +41,10 @@ public class Consultas {
 	}
 	
 	public static String obtenerRevisiones() {
-		return "SELECT MAX(numero) FROM Revisiones WHERE codigoFolio = ?";
+		return "SELECT MAX(numero) FROM Estudios.Revisiones WHERE codigoFolio = ?";
+	}
+	
+	public static String darDescripcion() {
+		return "SELECT descripcion FROM Estudios.Revisiones WHERE codFolio = ? AND Numero = ?";
 	}
 }

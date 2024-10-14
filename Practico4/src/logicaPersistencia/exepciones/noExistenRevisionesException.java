@@ -1,6 +1,6 @@
 package logicaPersistencia.exepciones;
 
-public class noExistenRevisionesException {
+public class noExistenRevisionesException extends Exception{
 private String mensaje;
 	
 	public noExistenRevisionesException(String mensaje) {
