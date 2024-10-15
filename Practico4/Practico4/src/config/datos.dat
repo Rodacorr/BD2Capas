@@ -1,4 +1,0 @@
-URL = jdbc:mysql://localhost:3306/
-USR = root
-PWD = admin
-DRIVER = com.mysql.jdbc.Driver
